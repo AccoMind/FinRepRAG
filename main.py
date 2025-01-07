@@ -16,7 +16,7 @@ _log = logging.getLogger(__name__)
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    input_doc_path = Path("data/2408.09869v5-3.pdf")
+    input_doc_path = Path("data/2408.09869v5-5 copy.pdf")
 
     ###########################################################################
 
@@ -153,21 +153,21 @@ def main():
     output_dir.mkdir(parents=True, exist_ok=True)
     doc_filename = conv_result.input.file.stem
 
-    # Export Deep Search document JSON format:
-    with (output_dir / f"{doc_filename}.json").open("w", encoding="utf-8") as fp:
-        fp.write(json.dumps(conv_result.document.export_to_dict()))
+    # # Export Deep Search document JSON format:
+    # with (output_dir / f"{doc_filename}.json").open("w", encoding="utf-8") as fp:
+    #     fp.write(json.dumps(conv_result.document.export_to_dict()))
 
-    # Export Text format:
-    with (output_dir / f"{doc_filename}.txt").open("w", encoding="utf-8") as fp:
-        fp.write(conv_result.document.export_to_text())
+    # # Export Text format:
+    # with (output_dir / f"{doc_filename}.txt").open("w", encoding="utf-8") as fp:
+    #     fp.write(conv_result.document.export_to_text())
 
     # Export Markdown format:
     with (output_dir / f"{doc_filename}.md").open("w", encoding="utf-8") as fp:
         fp.write(conv_result.document.export_to_markdown())
 
-    # Export Document Tags format:
-    with (output_dir / f"{doc_filename}.doctags").open("w", encoding="utf-8") as fp:
-        fp.write(conv_result.document.export_to_document_tokens())
+    # # Export Document Tags format:
+    # with (output_dir / f"{doc_filename}.doctags").open("w", encoding="utf-8") as fp:
+    #     fp.write(conv_result.document.export_to_document_tokens())
 
 if __name__ == "__main__":
     main()

@@ -16,7 +16,7 @@ _log = logging.getLogger(__name__)
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    input_doc_path = Path("data/2408.09869v5-5 copy.pdf")
+    input_doc_path = Path("data/251.pdf")
 
     ###########################################################################
 
@@ -70,7 +70,7 @@ def main():
     # Docling Parse with EasyOCR
     # ----------------------
     pipeline_options = PdfPipelineOptions()
-    pipeline_options.do_ocr = True
+    pipeline_options.do_ocr = False
     pipeline_options.do_table_structure = True
     pipeline_options.table_structure_options.do_cell_matching = True
     pipeline_options.ocr_options.lang = ["es"]

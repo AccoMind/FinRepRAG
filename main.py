@@ -16,7 +16,7 @@ _log = logging.getLogger(__name__)
 def main():
     logging.basicConfig(level=logging.INFO)
 
-    input_doc_path = Path("data/251.pdf")
+    input_doc_path = Path("data/HATTON_NATIONAL_BANK_PLC 2023-48.pdf")
 
     ###########################################################################
 

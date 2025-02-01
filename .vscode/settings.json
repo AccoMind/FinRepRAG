@@ -1,6 +1,11 @@
 {
     "cSpell.words": [
+        "Chunker",
         "datamodel",
-        "docling"
+        "docling",
+        "dotenv",
+        "huggingface",
+        "Milvus",
+        "vectorstores"
     ]
 }

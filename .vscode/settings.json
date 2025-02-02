@@ -7,6 +7,8 @@
         "huggingface",
         "langchain",
         "Milvus",
-        "vectorstores"
+        "vectorstore",
+        "vectorstores",
+        "Zilliz"
     ]
 }

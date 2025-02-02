@@ -1,7 +1,14 @@
-from docling.document_converter import DocumentConverter
+from langchain_docling.loader import DoclingLoader, ExportType
+from docling.chunking import HybridChunker
 
-source = "data\HATTON_NATIONAL_BANK_PLC 2023-48.pdf"  # document per local path or URL
-converter = DocumentConverter()
-result = converter.convert(source)
-printable = result.document.export_to_markdown()
-print(printable)
+loader = DoclingLoader(
+    file_path="test/data/DocLayNet.pdf",
+    chunker=HybridChunker(),
+)
+
+docs = loader.load()
+
+for doc in docs:
+    metadata = doc.metadata
+    metadata.update({"export_type": "pdf"})
+    updated_metadata = metadata

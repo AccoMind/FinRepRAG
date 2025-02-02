@@ -1,1 +1,1 @@
-print("This is the main file")
+#main.py

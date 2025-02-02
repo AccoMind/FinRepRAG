@@ -5,6 +5,7 @@
         "docling",
         "dotenv",
         "huggingface",
+        "huggingfacehub",
         "langchain",
         "Milvus",
         "vectorstore",

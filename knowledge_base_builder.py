@@ -30,12 +30,12 @@ class KnowledgeBaseBuilder:
 
     def extract_metadata(self, filename: str) -> Dict:
         """Extract company name and year from filename."""
-        pattern = r"(.+)_AR_(\d{4})\.pdf"
+        pattern = r"(.+)_Annual_Report_(\d{4})\.pdf"
         match = re.match(pattern, filename)
         if match:
             company_name, year = match.groups()
             return {
-                "company_name": company_name,
+                "company_name": company_name.replace("_", " "),  # Convert underscores to spaces
                 "year": int(year),
                 "source": filename,
                 "processed_date": datetime.now().isoformat()

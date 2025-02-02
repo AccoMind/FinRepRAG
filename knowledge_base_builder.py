@@ -1,4 +1,3 @@
-# knowledge_base_builder.py
 import os
 from pathlib import Path
 from typing import List, Dict
@@ -21,7 +20,7 @@ class KnowledgeBaseBuilder:
             drive_folder_path: Path to Google Drive folder containing annual reports
             milvus_uri: URI for Milvus/Zilliz Cloud connection
         """
-        self.drive_folder_path = folder_path
+        self.folder_path = folder_path
         self.milvus_uri = milvus_uri
         
         # Initialize embedding model
@@ -71,17 +70,17 @@ class KnowledgeBaseBuilder:
             Milvus vector store instance
         """
         # Get all PDF files in the folder
-        pdf_files = [f for f in os.listdir(self.drive_folder_path) if f.endswith('.pdf')]
+        pdf_files = [f for f in os.listdir(self.folder_path) if f.endswith('.pdf')]
         
         if not pdf_files:
-            raise ValueError(f"No PDF files found in {self.drive_folder_path}")
+            raise ValueError(f"No PDF files found in {self.folder_path}")
         
         print(f"Found {len(pdf_files)} PDF files to process")
         
         all_docs = []
         for pdf_file in pdf_files:
             print(f"Processing {pdf_file}...")
-            file_path = os.path.join(self.drive_folder_path, pdf_file)
+            file_path = os.path.join(self.folder_path, pdf_file)
             try:
                 chunks = self.process_document(file_path)
                 all_docs.extend(chunks)

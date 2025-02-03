@@ -37,7 +37,6 @@ class KnowledgeBaseBuilder:
             return {
                 "company_name": company_name.replace("_", " "),  # Convert underscores to spaces
                 "year": int(year),
-                "source": filename,
                 "processed_date": datetime.now().isoformat()
             }
         raise ValueError(f"Filename {filename} doesn't match expected pattern")

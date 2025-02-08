@@ -17,30 +17,35 @@ GEN_MODEL_ID = "meta-llama/Llama-3.3-70B-Instruct"
 EXPORT_TYPE = ExportType.DOC_CHUNKS
 
 class PersistentKnowledgeBaseBuilder:
-    def __init__(self, 
+    def __init__(self,
                  drive_folder_path: str,
                  milvus_uri: str,
                  milvus_user: str,
                  milvus_password: str,
+                 embed_model_id: str,
                  collection_name: str = "cse_annual_reports"):
         """
         Initialize the Knowledge Base Builder with persistence support.
-        
+
         Args:
             drive_folder_path: Path to Google Drive folder containing annual reports
             milvus_uri: Zilliz Cloud URI
             milvus_user: Zilliz Cloud username
             milvus_password: Zilliz Cloud password
+            embed_model_id: HuggingFace model ID for embeddings
             collection_name: Name for the Milvus collection
         """
         self.drive_folder_path = drive_folder_path
         self.collection_name = collection_name
-        
+
+        # Mount Google Drive
+        # drive.mount('/content/drive', force_remount=True)
+
         # Initialize embedding model
         self.embedding_model = HuggingFaceEmbeddings(
-            model_name="EMBED_MODEL_ID"
+            model_name=embed_model_id
         )
-        
+
         # Setup Milvus connection
         self.connection_args = {
             "uri": milvus_uri,
@@ -48,10 +53,10 @@ class PersistentKnowledgeBaseBuilder:
             "password": milvus_password,
             "secure": True
         }
-        
+
         # Initialize/connect to vector store
         self._initialize_vectorstore()
-        
+
         # Setup processing history tracking
         self.history_file = Path(drive_folder_path) / "processing_history.json"
         self.processed_files = self._load_processing_history()
@@ -62,7 +67,8 @@ class PersistentKnowledgeBaseBuilder:
             self.vectorstore = Milvus(
                 embedding_function=self.embedding_model,
                 collection_name=self.collection_name,
-                connection_args=self.connection_args
+                connection_args=self.connection_args,
+                auto_id=True
             )
             print(f"Connected to existing collection: {self.collection_name}")
         except Exception as e:
@@ -107,45 +113,45 @@ class PersistentKnowledgeBaseBuilder:
     def process_document(self, file_path: str) -> List:
         """Process a single document and return chunks with metadata."""
         file_hash = self._compute_file_hash(file_path)
-        
+
         # Check if file was already processed and hasn't changed
         filename = Path(file_path).name
         if filename in self.processed_files and self.processed_files[filename]["hash"] == file_hash:
             print(f"Skipping {filename} - already processed and unchanged")
             return []
-        
+
         loader = DoclingLoader(
             file_path=file_path,
             export_type=EXPORT_TYPE,
-            chunker=HybridChunker(tokenizer="EMBED_MODEL_ID")
+            chunker=HybridChunker(tokenizer=self.embedding_model.model_name)  # Use the actual model name
         )
-        
+
         docs = loader.load()
         metadata = self.extract_metadata(filename, file_hash)
-        
+
         # Add metadata to each chunk
         for doc in docs:
             doc.metadata.update(metadata)
-        
+
         # Update processing history
         self.processed_files[filename] = {
             "hash": file_hash,
             "processed_date": metadata["processed_date"],
             "chunk_count": len(docs)
         }
-        
+
         return docs
 
     def build_or_update_knowledge_base(self) -> Milvus:
         """Build or update the knowledge base with new/modified documents."""
         # Get all PDF files in the folder
         pdf_files = [f for f in os.listdir(self.drive_folder_path) if f.endswith('.pdf')]
-        
+
         if not pdf_files:
             raise ValueError(f"No PDF files found in {self.drive_folder_path}")
-        
+
         print(f"Found {len(pdf_files)} PDF files to process")
-        
+
         all_docs = []
         for pdf_file in pdf_files:
             print(f"Processing {pdf_file}...")
@@ -157,7 +163,7 @@ class PersistentKnowledgeBaseBuilder:
                     print(f"Successfully processed {pdf_file} into {len(chunks)} chunks")
             except Exception as e:
                 print(f"Error processing {pdf_file}: {str(e)}")
-        
+
         if all_docs:
             print(f"Adding {len(all_docs)} new chunks to vector store...")
             if self.vectorstore is None:
@@ -172,56 +178,32 @@ class PersistentKnowledgeBaseBuilder:
             else:
                 # Add new documents to existing vector store
                 self.vectorstore.add_documents(all_docs)
-            
+
             # Save processing history
             self._save_processing_history()
             print("Knowledge base updated successfully!")
         else:
             print("No new or modified documents to process")
-        
+
         return self.vectorstore
 
     def get_build_stats(self) -> Dict:
         """Get statistics about the knowledge base."""
         if self.vectorstore is None:
             return {"status": "Not initialized"}
-            
+
         collection = self.vectorstore.col
         stats = collection.get_statistics()
-        
+
         # Get processing history stats
         processed_files = len(self.processed_files)
         total_chunks = sum(info["chunk_count"] for info in self.processed_files.values())
-        
+
         return {
             "total_documents": processed_files,
             "total_chunks": total_chunks,
             "vector_store_chunks": stats["row_count"],
             "embedding_dimension": stats["dim"],
-            "last_update": max(info["processed_date"] 
+            "last_update": max(info["processed_date"]
                              for info in self.processed_files.values()) if self.processed_files else None
         }
-
-
-def main():
-    from dotenv import load_dotenv
-    load_dotenv()
-    
-    # Initialize builder
-    builder = PersistentKnowledgeBaseBuilder(
-        drive_folder_path="/content/drive/MyDrive/AnnualReports",
-        milvus_uri=os.getenv("MILVUS_URI"),
-        milvus_user=os.getenv("MILVUS_USER"),
-        milvus_password=os.getenv("MILVUS_PASSWORD")
-    )
-    
-    # Build or update knowledge base
-    vectorstore = builder.build_or_update_knowledge_base()
-    
-    # Get statistics
-    stats = builder.get_build_stats()
-    print("\nKnowledge Base Statistics:")
-    print(json.dumps(stats, indent=2))
-
-if __name__ == "__main__":
-    main()

@@ -5,6 +5,7 @@
         "datamodel",
         "docling",
         "dotenv",
+        "HATTON",
         "huggingface",
         "huggingfacehub",
         "langchain",

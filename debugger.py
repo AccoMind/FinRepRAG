@@ -1,16 +1,33 @@
 from langchain_docling.loader import DoclingLoader, ExportType
 from docling.chunking import HybridChunker
+from docling.datamodel.pipeline_options import PdfPipelineOptions
+from docling.document_converter import DocumentConverter, PdfFormatOption
+from docling.datamodel.base_models import InputFormat
+
+pipeline_options = PdfPipelineOptions()
+pipeline_options.do_ocr = False
+
+doc_converter = DocumentConverter(
+    format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)}
+)
 
 loader = DoclingLoader(
-    file_path="test/data/DocLayNet.pdf",
+    converter=doc_converter,
+    file_path="test/data/Docling Technical Report-5.pdf",
     chunker=HybridChunker(),
+    export_type=ExportType.DOC_CHUNKS,
 )
+
+print("Loading documents...")
 
 docs = loader.load()
 
-for doc in docs:
-    metadata = doc.metadata
-    print(metadata)
+print(f"Loaded {len(docs)} documents")
+
+for i, doc in enumerate(docs):
+    print(f"\n\nDocument {i + 1}:")
+    # print(doc.page_content)
+    print(doc.metadata)
 
 # metadata_example = {
 #     'source': 'test/data/DocLayNet.pdf', 

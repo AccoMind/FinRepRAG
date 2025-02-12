@@ -16,30 +16,12 @@ loader = DoclingLoader(
     converter=doc_converter,
     file_path="test/data/HATTON_NATIONAL_BANK_PLC 2023-242.pdf",
     chunker=HybridChunker(),
-    # export_type=ExportType.MARKDOWN,
+    export_type=ExportType.DOC_CHUNKS,
 )
 
 print("Loading documents...")
 
 docs = loader.load()
-
-# headers_to_split_on = [
-#     ("#", "Header 1"),
-#     ("##", "Header 2"),
-#     ("###", "Header 3"),
-# ]
-
-# markdown_splitter = MarkdownHeaderTextSplitter(headers_to_split_on)
-# md_header_splits = markdown_splitter.split_text(docs[0].page_content)
-
-# print(f"Loaded {len(md_header_splits)} documents")
-
-# for i, doc in enumerate(md_header_splits):
-#     print(f"\n\nDocument {i + 1}:")
-#     print(doc.page_content)
-#     print(doc.metadata)
-
-
 
 print(f"Loaded {len(docs)} documents")
 
@@ -47,6 +29,7 @@ for i, doc in enumerate(docs):
     print(f"\n\nDocument {i + 1}:")
     print(doc.page_content)
     print(doc.metadata)
+
 
 # metadata_example = {
 #     'source': 'test/data/DocLayNet.pdf', 

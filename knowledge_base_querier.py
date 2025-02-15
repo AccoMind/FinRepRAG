@@ -2,7 +2,7 @@ from typing import Dict, List, Optional
 from langchain.chains import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_huggingface import HuggingFaceEndpoint
-from langchain.vectorstores import Milvus
+from langchain_milvus import Milvus
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain_core.prompts import PromptTemplate
 

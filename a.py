@@ -10,6 +10,9 @@ from langchain_docling.loader import DoclingLoader, ExportType
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_milvus import Milvus
 from docling.chunking import HybridChunker
+from langchain_core.embeddings import Embeddings
+
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 # Configuration
 EMBED_MODEL_ID = "sentence-transformers/all-MiniLM-L6-v2"

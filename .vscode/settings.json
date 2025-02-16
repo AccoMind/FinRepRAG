@@ -4,6 +4,7 @@
         "Chunker",
         "datamodel",
         "docling",
+        "docstore",
         "dotenv",
         "HATTON",
         "huggingface",
